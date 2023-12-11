@@ -16,7 +16,7 @@ import {
   SessionSigs,
 } from '@lit-protocol/types';
 
-export const DOMAIN = process.env.NEXT_PUBLIC_DOMAIN || 'localhost';
+export const DOMAIN = process.env.NEXT_PUBLIC_DOMAIN;
 export const ORIGIN =
   process.env.NEXT_PUBLIC_VERCEL_ENV === 'production'
     ? `https://${DOMAIN}`

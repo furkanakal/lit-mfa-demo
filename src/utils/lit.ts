@@ -20,7 +20,7 @@ export const DOMAIN = process.env.NEXT_PUBLIC_DOMAIN || 'lit-pkp-auth-demo-2.ver
 export const ORIGIN =
   process.env.NEXT_PUBLIC_VERCEL_ENV === 'production'
     ? `https://${DOMAIN}`
-    : `http://${DOMAIN}:3000`;
+    : `http://localhost:3000`;
 
 export const litNodeClient: LitNodeClient = new LitNodeClient({
   alertWhenUnauthorized: false,

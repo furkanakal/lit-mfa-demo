@@ -6,17 +6,14 @@ import {
   LitAuthClient,
 } from '@lit-protocol/lit-auth-client';
 import { LitNodeClient } from '@lit-protocol/lit-node-client';
+import { AuthMethodType, ProviderType } from '@lit-protocol/constants';
 import {
-  AuthMethodScope,
-  AuthMethodType,
-  ProviderType,
-} from '@lit-protocol/constants';
-import {
+  AuthCallbackParams,
   AuthMethod,
   GetSessionSigsProps,
   IRelayPKP,
+  MintRequestBody,
   SessionSigs,
-  AuthCallbackParams,
 } from '@lit-protocol/types';
 
 export const DOMAIN = process.env.NEXT_PUBLIC_DOMAIN || 'localhost';
@@ -33,7 +30,7 @@ export const litNodeClient: LitNodeClient = new LitNodeClient({
 
 export const litAuthClient: LitAuthClient = new LitAuthClient({
   litRelayConfig: {
-    relayUrl: 'https://relay-server-staging.herokuapp.com',
+    // relayUrl: 'http://localhost:3001',
     relayApiKey: 'test-api-key',
   },
   litNodeClient,
@@ -184,19 +181,39 @@ export async function getSessionSigs({
   authMethod: AuthMethod;
   sessionSigsParams: GetSessionSigsProps;
 }): Promise<SessionSigs> {
-  const provider = getProviderByAuthMethod(authMethod);
-  if (provider) {
-    const sessionSigs = await provider.getSessionSigs({
-      pkpPublicKey,
-      authMethod,
-      sessionSigsParams,
+
+  // const provider = getProviderByAuthMethod(authMethod);
+  // if (provider) {
+  //   const sessionSigs = await provider.getSessionSigs({
+  //     pkpPublicKey,
+  //     authMethod,
+  //     sessionSigsParams,
+  //   });
+  //   return sessionSigs;
+  // } else {
+  //   throw new Error(
+  //     `Provider not found for auth method type ${authMethod.authMethodType}`
+  //   );
+  // }
+  await litNodeClient.connect();
+  const authNeededCallback = async (params: AuthCallbackParams) => {
+    const response = await litNodeClient.signSessionKey({
+      statement: params.statement,
+      authMethods: [authMethod],
+      pkpPublicKey: pkpPublicKey,
+      expiration: params.expiration,
+      resources: params.resources,
+      chainId: 1,
     });
-    return sessionSigs;
-  } else {
-    throw new Error(
-      `Provider not found for auth method type ${authMethod.authMethodType}`
-    );
-  }
+    return response.authSig;
+  };
+
+  const sessionSigs = await litNodeClient.getSessionSigs({
+    ...sessionSigsParams,
+    authNeededCallback,
+  });
+
+  return sessionSigs;
 }
 
 export async function updateSessionSigs(
@@ -220,24 +237,28 @@ export async function getPKPs(authMethod: AuthMethod): Promise<IRelayPKP[]> {
  */
 export async function mintPKP(authMethod: AuthMethod): Promise<IRelayPKP> {
   const provider = getProviderByAuthMethod(authMethod);
-  // Set scope of signing any data
-  const options = {
-    permittedAuthMethodScopes: [[AuthMethodScope.SignAnything]],
-  };
+
+  // const authMethodScopePrompt = prompt('Enter the auth method scope.\n0 - no permissions\n1 - to sign anything\n2 - to only sign messages. \n\nRead more at https://developer.litprotocol.com/v3/sdk/wallets/auth-methods/#auth-method-scopes');
+  const authMethodScope = 1;
+  console.log("authMethodScope:", authMethodScope);
 
   let txHash: string;
 
   if (authMethod.authMethodType === AuthMethodType.WebAuthn) {
     // Register new WebAuthn credential
-    const webAuthnInfo = await (provider as WebAuthnProvider).register();
+    const options = await (provider as WebAuthnProvider).register();
 
     // Verify registration and mint PKP through relay server
     txHash = await (
       provider as WebAuthnProvider
-    ).verifyAndMintPKPThroughRelayer(webAuthnInfo, options);
+    ).verifyAndMintPKPThroughRelayer(options, {
+      permittedAuthMethodScopes: [[authMethodScope]],
+    });
   } else {
     // Mint PKP through relay server
-    txHash = await provider.mintPKPThroughRelayer(authMethod, options);
+    txHash = await provider.mintPKPThroughRelayer(authMethod, {
+      permittedAuthMethodScopes: [[authMethodScope]],
+    });
   }
 
   const response = await provider.relay.pollRequestUntilTerminalState(txHash);

@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { AuthMethod } from '@lit-protocol/types';
 import { getSessionSigs } from '../utils/lit';
-import { LitAbility, LitActionResource } from '@lit-protocol/auth-helpers';
+import { LitAbility, LitPKPResource, LitActionResource } from '@lit-protocol/auth-helpers';
 import { IRelayPKP } from '@lit-protocol/types';
 import { SessionSigs } from '@lit-protocol/types';
 
@@ -22,7 +22,7 @@ export default function useSession() {
         const chain = 'ethereum';
         const resourceAbilities = [
           {
-            resource: new LitActionResource('*'),
+            resource: new LitPKPResource('*'),
             ability: LitAbility.PKPSigning,
           },
         ];
@@ -30,6 +30,13 @@ export default function useSession() {
           Date.now() + 1000 * 60 * 60 * 24 * 7
         ).toISOString(); // 1 week
 
+        console.log("pkpPublicKey_1: ", pkp.publicKey);
+        console.log("authMethod_1: ", authMethod);
+        console.log("chain_1: ", chain);
+        console.log("expiration_1: ", expiration);
+        console.log("resourceAbilities_1: ", resourceAbilities);
+        
+        console.log("useSession getSessionSigs is called");
         // Generate session sigs
         const sessionSigs = await getSessionSigs({
           pkpPublicKey: pkp.publicKey,
@@ -40,6 +47,8 @@ export default function useSession() {
             resourceAbilityRequests: resourceAbilities,
           },
         });
+
+        console.log("sessionSigs_1: ", sessionSigs);
 
         setSessionSigs(sessionSigs);
       } catch (err) {

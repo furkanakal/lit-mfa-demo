@@ -74,24 +74,30 @@ export default function SignUpView() {
   }, [authMethod, currentAccount, initSession]);
 
   if (authLoading) {
+    console.log("Auth loading...");
     return (
       <Loading copy={'Authenticating your credentials...'} error={error} />
     );
   }
-
   if (accountsLoading) {
+    console.log("Accounts loading...");
     return <Loading copy={'Creating your account...'} error={error} />;
   }
 
   if (sessionLoading) {
+    console.log("Session loading...");
     return <Loading copy={'Securing your session...'} error={error} />;
   }
+  
+  console.log("MFA sessionSigs", sessionSigs);
 
   if (currentAccount && sessionSigs) {
+    console.log("Current account && session sigs...");
     return (
       <Dashboard currentAccount={currentAccount} sessionSigs={sessionSigs} />
     );
   } else {
+    console.log("else");
     return (
       <SignUpMethods
         handleGoogleLogin={handleGoogleLogin}

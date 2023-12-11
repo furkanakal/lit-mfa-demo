@@ -25,10 +25,13 @@ export default function Dashboard({
   const { disconnectAsync } = useDisconnect();
   const router = useRouter();
 
+  console.log("MFA Dashboard sessionSigs", sessionSigs);
+
   /**
    * Sign a message with current PKP
    */
   async function signMessageWithPKP() {
+    console.log("MFA signMessageWithPKP");
     setLoading(true);
 
     try {
@@ -36,18 +39,23 @@ export default function Dashboard({
         controllerSessionSigs: sessionSigs,
         pkpPubKey: currentAccount.publicKey,
       });
+      console.log("MFA pkpWallet before", pkpWallet);
       await pkpWallet.init();
+      console.log("MFA pkpWallet after", pkpWallet);
 
       const signature = await pkpWallet.signMessage(message);
+      console.log("MFA signature", signature);
       setSignature(signature);
 
       // Get the address associated with the signature created by signing the message
       const recoveredAddr = ethers.utils.verifyMessage(message, signature);
+      console.log("MFA recoveredAddr", recoveredAddr);
       setRecoveredAddress(recoveredAddr);
 
       // Check if the address associated with the signature is the same as the current PKP
       const verified =
         currentAccount.ethAddress.toLowerCase() === recoveredAddr.toLowerCase();
+        console.log("MFA verified", verified);
       setVerified(verified);
     } catch (err) {
       console.error(err);

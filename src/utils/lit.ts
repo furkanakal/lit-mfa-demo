@@ -30,11 +30,14 @@ export const litNodeClient: LitNodeClient = new LitNodeClient({
 
 export const litAuthClient: LitAuthClient = new LitAuthClient({
   litRelayConfig: {
-    // relayUrl: 'http://localhost:3001',
+    //relayUrl: 'https://relay-server-staging.herokuapp.com',
+    relayUrl: 'https://relayer-server-staging-cayenne.getlit.dev',
     relayApiKey: 'test-api-key',
   },
   litNodeClient,
 });
+
+console.log("relay server: ", litAuthClient.relay);
 
 /**
  * Validate provider

@@ -16,7 +16,7 @@ import {
   SessionSigs,
 } from '@lit-protocol/types';
 
-export const DOMAIN = process.env.NEXT_PUBLIC_DOMAIN || 'lit-pkp-auth-demo-2.vercel.app';
+export const DOMAIN = process.env.NEXT_PUBLIC_DOMAIN || 'lit-mfa-demo.vercel.app';
 export const ORIGIN =
   process.env.NEXT_PUBLIC_VERCEL_ENV === 'production'
     ? `https://${DOMAIN}`

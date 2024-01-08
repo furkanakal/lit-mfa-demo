@@ -21,12 +21,16 @@ import {
 
 export default function Home() {
   const [status, setStatus] = useState('');
+  const [accounts, setAccounts] = useState<IRelayPKP[]>([]);
+  const [currentAccount, setCurrentAccount] = useState<IRelayPKP>();
 
   const DOMAIN = 'localhost';
   const ORIGIN = process.env.NEXT_PUBLIC_VERCEL_ENV === 'production'
     ? `https://${DOMAIN}`
     : `http://${DOMAIN}:3000`;
   const redirectUri = ORIGIN;
+  
+  console.log(redirectUri);
 
   const litNodeClient = new LitNodeClient({
     network: "cayenne"
@@ -60,7 +64,8 @@ export default function Home() {
       authMethods: [
         AuthMethodType.Google,
         AuthMethodType.WebAuthn
-      ]
+      ],
+      options
     });
 
     const response = await litAuthClient.relay.pollRequestUntilTerminalState(txHash);
@@ -78,10 +83,15 @@ export default function Home() {
   }
 
   async function handleRegister() {
-    const newUser = await googleProvider.signIn();
+    await googleProvider.signIn();
+    const googleAuth = await googleProvider.authenticate();
+
+    const newPKP = await mintPKP();
+
+    setAccounts(prev => [...prev, newPKP]);
+    setCurrentAccount(newPKP);
     
-    console.log("newUser: ", newUser);
-    
+    console.log("googleAuth: ", googleAuth);
 
   }
 

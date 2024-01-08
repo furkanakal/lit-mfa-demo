@@ -32,8 +32,8 @@ export default function Home() {
     litNodeClient
   });
 
-  const googleProvider = litAuthClient.initProvider(ProviderType.Google);
-  const webAuthnProvider = litAuthClient.initProvider(ProviderType.WebAuthn);
+  const googleProvider = litAuthClient.initProvider<GoogleProvider>;
+  const webAuthnProvider = litAuthClient.initProvider<WebAuthnProvider>;
 
   async function register() {
 

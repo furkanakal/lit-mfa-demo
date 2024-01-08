@@ -21,32 +21,23 @@ import {
 export default function Home() {
   const [status, setStatus] = useState('');
 
-  async function register() {
-    const litNodeClient = new LitNodeClient({
-      network: "cayenne"
-    });
+  const litNodeClient = new LitNodeClient({
+    network: "cayenne"
+  });
 
-    const litAuthClient = new LitAuthClient({
-      litRelayConfig: {
-        relayApiKey: "furkan"
-      },
-      litNodeClient
-    });
+  const litAuthClient = new LitAuthClient({
+    litRelayConfig: {
+      relayApiKey: "furkan"
+    },
+    litNodeClient
+  });
+
+  async function register() {
 
 
   }
 
   async function login() {
-    const litNodeClient = new LitNodeClient({
-      network: "cayenne"
-    });
-
-    const litAuthClient = new LitAuthClient({
-      litRelayConfig: {
-        relayApiKey: "furkan"
-      },
-      litNodeClient
-    });
 
 
   }

@@ -3,15 +3,51 @@ import { LitLogo } from '@/components/LitLogo'
 import { useState } from 'react';
 
 import { LitNodeClient } from '@lit-protocol/lit-node-client';
+import {
+  LitAuthClient,
+  GoogleProvider,
+  WebAuthnProvider
+} from '@lit-protocol/lit-auth-client';
 import * as LitJsSdk from '@lit-protocol/lit-node-client';
+import {
+  AuthMethodScope,
+  AuthMethodType,
+  ProviderType
+} from '@lit-protocol/constants';
+import {
+  AuthMethod
+} from '@lit-protocol/types';
 
 export default function Home() {
   const [status, setStatus] = useState('');
 
-  async function go() {
-    setStatus('');
+  async function register() {
+    const litNodeClient = new LitNodeClient({
+      network: "cayenne"
+    });
 
-    
+    const litAuthClient = new LitAuthClient({
+      litRelayConfig: {
+        relayApiKey: "furkan"
+      },
+      litNodeClient
+    });
+
+
+  }
+
+  async function login() {
+    const litNodeClient = new LitNodeClient({
+      network: "cayenne"
+    });
+
+    const litAuthClient = new LitAuthClient({
+      litRelayConfig: {
+        relayApiKey: "furkan"
+      },
+      litNodeClient
+    });
+
 
   }
 
@@ -28,7 +64,11 @@ export default function Home() {
       </div>
 
       <div className="flex justify-center mt-10">
-        <button onClick={go} className="lit-button">Go</button>
+        <button onClick={register} className="lit-button">Sign up!</button>
+      </div>
+
+      <div className="flex justify-center mt-10">
+        <button onClick={login} className="lit-button">Log in!</button>
       </div>
 
       <div className="flex justify-center mt-10 text-white">
